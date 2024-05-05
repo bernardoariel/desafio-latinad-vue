@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const pokemonApi = axios.create({
-  baseURL: 'https://pokeapi.co/api/v2/pokemon',
+const displaysApi = axios.create({
+  baseURL: 'https://challenge-front-7fw1.onrender.com',
 });
 
-export { pokemonApi };
+export { displaysApi };
