@@ -86,6 +86,17 @@ export const useDisplays = () => {
             throw error; // Propaga el error para manejarlo en la interfaz de usuario
         }
     };
+    const deleteDisplay = async (id) => {
+        try {
+            const response = await displaysApi.delete(`/display/${id}`, { headers });
+            getDisplays()
+            return response.data;
+        } catch (error) {
+            console.error('Error al eliminar el display:', error);
+            throw error;
+        }
+    };
+    
 
     const itemsOutdoor = computed(() => {
             const results = productsCount.value.filter(product => product.type === 'outdoor')
@@ -111,6 +122,7 @@ export const useDisplays = () => {
         inDoorPercent,
         getTotalDisplays,
         createDisplay,
-        isLoading
+        isLoading,
+        deleteDisplay
     }
 }

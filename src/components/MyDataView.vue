@@ -79,7 +79,7 @@
                                     <span class="text-2xl font-semibold text-900">${{ item.price_per_day }}</span>
                                     <div class="flex gap-2">
                                         <Button icon="pi pi-pencil" label="Editar Item" class="flex-auto white-space-nowrap"></Button>
-                                        <Button icon="pi pi-trash" severity="danger"  outlined></Button>
+                                        <Button icon="pi pi-trash" severity="danger" outlined @click="handleDelete(item.id)"></Button>
                                        
                                     </div>
                                 </div>
@@ -100,7 +100,7 @@
     />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue';
 import { useDisplays, } from "@/composables/useDisplays";
 import { getSeverity } from '../helpers/getSeverity';
@@ -108,7 +108,7 @@ import { useSelectedQuery } from '../composables/useSelectedQuery';
 import PaginationNumber from "./PaginationNumber.vue";
 
 const { selectedPageSize,selectedOptionType,searchQuery,selectOffset } = useSelectedQuery()
-const { getDisplays, totalItems,products,isLoading } = useDisplays();
+const { getDisplays, totalItems,products,isLoading,deleteDisplay} = useDisplays();
 const currentPage = ref(1);
 
 
@@ -130,7 +130,10 @@ const handlePageChange = async (newPage) => {
     selectOffset.value = (newPage - 1) * selectedPageSize.value;
     await getItems();
 };
-
+const handleDelete = async (id:number)=>{
+    console.log('id::: ', id);
+    deleteDisplay(id)
+}
 onMounted(async() => {
     try {
     await getDisplays();

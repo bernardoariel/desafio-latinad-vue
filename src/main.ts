@@ -24,6 +24,7 @@ import Avatar from 'primevue/avatar';
 import SelectButton from 'primevue/selectbutton';
 import ProgressSpinner from 'primevue/progressspinner';
 import ProgressBar from 'primevue/progressbar';
+import ConfirmPopup from 'primevue/confirmpopup';
 
 const app = createApp(App)
 app.use(PrimeVue);
@@ -44,6 +45,7 @@ app.component('MeterGroup', MeterGroup);
 app.component('SelectButton', SelectButton);
 app.component('ProgressSpinner', ProgressSpinner);
 app.component('ProgressBar', ProgressBar);
+app.component('ConfirmPopup', ConfirmPopup);
 
 
 
