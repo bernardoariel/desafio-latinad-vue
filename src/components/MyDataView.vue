@@ -3,21 +3,15 @@
         <DataView :value="products" :layout="layout">
             <template #header>
                 <div class="flex justify-content-between align-items-center px-3">
+                    
                     <DataViewLayoutOptions v-model="layout" />
-                   
-                    <div class="page-size-selector">
-      <label for="pageSize">Registros por Página:</label>
-      <select class="select select-bordered" id="pageSize" v-model="selectedPageSize">
-        <option v-for="size in pageSizeOptions" :value="size" :key="size">{{ size }}</option>
-      </select>
-    </div>
 
-    <div class="search-group">
-      <InputText v-model="searchQuery" placeholder="Buscar" @keyup.enter="getItems()" />
-      <Button label="Buscar" severity="info" text  @click="getItems()" />
-    </div>
+                    <div class="search-group">
+                        <InputText v-model="searchQuery" placeholder="Buscar" @keyup.enter="getItems()" />
+                        <Button label="Buscar" severity="info" text  @click="getItems()" />
+                    </div>
 
-    <SelectButton v-model="selectedOptionType" :options="optionsType" optionLabel="name" aria-labelledby="basic" />
+                    <SelectButton v-model="selectedOptionType" :options="optionsType" optionLabel="name" aria-labelledby="basic" />
                 </div>
             </template>
 
@@ -100,25 +94,30 @@
         <ProgressSpinner />
     </div>
     <PaginationNumber class="flex align-items-center justify-content-center"
-            :totalPages="Math.ceil(totalItems.value / selectedPageSize.value)"
-            :currentPage="currentPage"
-            @pageChanges="handlePageChange"
-        />
+        :totalPages="totalPages"
+        :currentPage="currentPage"
+        @pageChange="handlePageChange"
+    />
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from 'vue';
 import { useDisplays, } from "@/composables/useDisplays";
 import { getSeverity } from '../helpers/getSeverity';
 import { useSelectedQuery } from '../composables/useSelectedQuery';
 import PaginationNumber from "./PaginationNumber.vue";
 
-const { selectedPageSize,selectedOptionType,searchQuery } = useSelectedQuery()
-const { getDisplays,totalItems,products } = useDisplays()
+const { selectedPageSize,selectedOptionType,searchQuery,selectOffset } = useSelectedQuery()
+const { getDisplays, totalItems,products } = useDisplays();
+const currentPage = ref(1);
+
 const isLoading = ref(true)
 
 const layout = ref('grid');
-const pageSizeOptions = [5, 10, 15, 30];
+
+const totalPages = computed(() => {
+    return Math.ceil(totalItems.value / selectedPageSize.value);
+});
 
 const optionsType = ref([
     { name: 'Todos', value: 'todos' },
@@ -126,40 +125,45 @@ const optionsType = ref([
     { name: 'Outdoor', value: 'outdoor' }
 ]);
 
-const currentPage = ref(1);
-
-
-const handlePageChange = (newPage) => {
+const handlePageChange = async (newPage) => {
     currentPage.value = newPage;
-    isLoading.value = true;
-    getDisplays().then(() => {
-        isLoading.value = false;
-    });
+    selectOffset.value = (newPage - 1) * selectedPageSize.value;
+    await getItems();
 };
 
-onMounted(() => {
-    isLoading.value = true;
-    getDisplays().then(() => {
-        isLoading.value = false;
-    });
+onMounted(async() => {
+    try {
+    await getDisplays();
+  } finally {
+    isLoading.value = false; 
+  }
 });
+
 const getItems = async ()=>{
     
     isLoading.value = true
     const typeValue = (selectedOptionType.value.value === '' || selectedOptionType.value.name === 'Todos') ? undefined : selectedOptionType.value.value;
+    try {
     await getDisplays();
+  } finally {
+    isLoading.value = false;  // Desactivar el indicador de carga después de obtener los datos
     searchQuery.value=''
-    isLoading.value = false
+  }
+    
 }
+
 watch(selectedPageSize, async (newVal) => {
     if (newVal) {
         console.log('newVal:!!:: ', newVal);
         await getItems();
     }
 });
+
 watch(selectedOptionType, async (newVal) => {
 
     if (newVal && newVal.value) {
+        selectedPageSize.value = 5
+        selectOffset.value = 0
         await getItems();
     }
 });

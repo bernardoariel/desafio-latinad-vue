@@ -39,6 +39,7 @@ export const useDisplays = () => {
     };
 
     const getDisplays = async () => {
+
         try {
             
             let url = `/display?offset=${selectOffset.value}&pageSize=${selectedPageSize.value}`;
@@ -50,7 +51,6 @@ export const useDisplays = () => {
     
             // Actualizar los estados reactivos
             products.value = responseData.data;
-            console.log('products.value::: ', products.value);
             totalItems.value = responseData.totalCount;
     
         } catch (error) {
