@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-column lg:flex-row md:flex-row full-height">
 
-    <div class="flex-1 p-2"> <!-- Aplica flex-1 para ocupar espacio equitativo -->
+    <div class="flex-1 p-2">
       <Card>
         <template #title>Administrador de alquiler de Displays</template>
         <template #content>
@@ -9,7 +9,7 @@
         </template>
       </Card>
     </div>
-    <div class="flex-1 p-2"> <!-- Aplica flex-1 para ocupar espacio equitativo -->
+    <div class="flex-1 p-2"> 
       <MyToolbar />
       <MyMetter class="mt-5 px-5 mb-5"/>
       <MyForm/>
@@ -27,8 +27,7 @@ import MyMetter from '@/components/MyMetter.vue';
 import  MyToolbar from '@/components/MyToolbar.vue';
 import { useDisplays } from '@/composables/useDisplays';
 
-const { getDisplays } = useDisplays()
-console.log('getDisplays::: ', getDisplays()); 
+
 </script>
 
 <style scoped>

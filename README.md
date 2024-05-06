@@ -4,6 +4,7 @@ This template should help get you started developing with Vue 3 in Vite.
 ## Pasos
 - Configuracion Inicial (PrimeVue - PrimeFlex)
 - Estructura de Carpetas
+- UI Incial
 
 
 ## Customize configuration

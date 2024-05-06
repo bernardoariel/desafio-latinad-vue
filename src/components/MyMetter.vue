@@ -1,16 +1,33 @@
 <template>
     <div class="card">
-        <MeterGroup :value="value" />
+      <MeterGroup v-if="!isLoading" :value="value" />
+      <ProgressBar v-else mode="indeterminate" style="height: 6px"></ProgressBar>
     </div>
-</template>
-
-<script setup>
-import { ref } from "vue";
-
-const value = ref([
-    { label: 'Apps', color: '#34d399', value: 16, icon: 'pi pi-table' },
-    { label: 'Messages', color: '#fbbf24', value: 8, icon: 'pi pi-inbox' },
-    { label: 'Media', color: '#60a5fa', value: 24, icon: 'pi pi-image' },
-    { label: 'System', color: '#c084fc', value: 10, icon: 'pi pi-cog' }
-]);
-</script>
+  </template>
+  
+  <script setup>
+  import { ref, onMounted, watch } from 'vue';
+  import { useDisplays } from '@/composables/useDisplays';
+  
+  const { outDoorPercent, inDoorPercent, getTotalDisplays  } = useDisplays();
+  const isLoading = ref(true)
+  const value = ref([]);
+  
+  onMounted(async () => {
+    isLoading.value= true
+    try {
+    await getTotalDisplays();
+  } finally {
+    isLoading.value = false;  // Desactivar el indicador de carga después de obtener los datos
+  }
+});
+  // Asegúrate de que el `watch` se ejecuta correctamente.
+  watch([outDoorPercent, inDoorPercent], () => {
+      value.value = [
+          { label: 'Todos', color: '#60a5fa', value: 100, icon: 'pi pi-database' },
+          { label: 'Outdoor', color: '#fbbf24', value: outDoorPercent.value, icon: 'pi pi-th-large' },
+          { label: 'Indoor', color: '#34d399', value: inDoorPercent.value, icon: 'pi pi-objects-column' },
+      ];
+  }, { immediate: true });
+  </script>
+  

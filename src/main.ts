@@ -21,6 +21,9 @@ import ToastService from 'primevue/toastservice';
 import MeterGroup from 'primevue/metergroup';
 import Toolbar from 'primevue/toolbar';
 import Avatar from 'primevue/avatar';
+import SelectButton from 'primevue/selectbutton';
+import ProgressSpinner from 'primevue/progressspinner';
+import ProgressBar from 'primevue/progressbar';
 
 const app = createApp(App)
 app.use(PrimeVue);
@@ -38,6 +41,11 @@ app.component('Toolbar', Toolbar);
 app.component('Toast', Toast);
 app.component('Avatar', Avatar);
 app.component('MeterGroup', MeterGroup);
+app.component('SelectButton', SelectButton);
+app.component('ProgressSpinner', ProgressSpinner);
+app.component('ProgressBar', ProgressBar);
+
+
 
 app.use(ToastService);
 app.mount('#app')
