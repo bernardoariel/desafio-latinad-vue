@@ -108,10 +108,10 @@ import { useSelectedQuery } from '../composables/useSelectedQuery';
 import PaginationNumber from "./PaginationNumber.vue";
 
 const { selectedPageSize,selectedOptionType,searchQuery,selectOffset } = useSelectedQuery()
-const { getDisplays, totalItems,products } = useDisplays();
+const { getDisplays, totalItems,products,isLoading } = useDisplays();
 const currentPage = ref(1);
 
-const isLoading = ref(true)
+
 
 const layout = ref('grid');
 
@@ -134,21 +134,19 @@ const handlePageChange = async (newPage) => {
 onMounted(async() => {
     try {
     await getDisplays();
-  } finally {
-    isLoading.value = false; 
-  }
+  }catch (error) {
+            console.error('Error fetching display totals:', error);
+        }
+    
 });
 
 const getItems = async ()=>{
-    
-    isLoading.value = true
-    const typeValue = (selectedOptionType.value.value === '' || selectedOptionType.value.name === 'Todos') ? undefined : selectedOptionType.value.value;
+   const typeValue = (selectedOptionType.value.value === '' || selectedOptionType.value.name === 'Todos') ? undefined : selectedOptionType.value.value;
     try {
-    await getDisplays();
-  } finally {
-    isLoading.value = false;  // Desactivar el indicador de carga después de obtener los datos
-    searchQuery.value=''
-  }
+        await getDisplays();
+    }catch (error) {
+            console.error('Error fetching display totals:', error);
+        }
     
 }
 

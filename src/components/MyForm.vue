@@ -4,13 +4,16 @@
       <template #content>
 
         <div class="flex flex-column gap-2 mb-2">
-          <label for="name">Name</label>
-          <InputText id="name" aria-describedby="name-help" />
+          <label for="name">Nombre</label>
+          <InputText id="name" aria-describedby="name-help" v-model="displayData.name" @blur="setTouched('name')" :invalid="!validations.nameValid && touched.name"/>
+          <small v-if="!validations.nameValid && touched.name" class="p-error">El nombre debe tener al menos 3 caracteres.</small>
+
         </div>
 
         <div class="flex flex-column gap-2 mb-2">
-            <label for="description">Description</label>
-            <InputText id="description" aria-describedby="description-help" />
+            <label for="description">Descripcion</label>
+            <InputText id="description" aria-describedby="description-help" v-model="displayData.description" @blur="setTouched('description')" :invalid="validations.descriptionValid && touched.description"/>
+            <small v-if="!validations.descriptionValid && touched.description" class="p-error">La descripción debe tener al menos 3 caracteres.</small>
         </div>
 
         <div class="flex flex-row gap-4 mb-2"> 
@@ -18,20 +21,29 @@
             <img src="../assets/noImage.gif" alt="image" class="image-size">
           </div>
 
-          <div class="flex flex-column gap-2 flex-grow"> <!-- Uso de flex-grow para ocupar el espacio restante -->
+          <div class="flex flex-column gap-2 flex-grow">
             <div class="flex flex-column gap-2">
-              <label for="price_per_day">Price Per Day</label>
-              <InputText id="price_per_day" aria-describedby="price_per_day-help" />
+              <label for="price_per_day">Alquiler por dia</label>
+              <InputText id="price_per_day" aria-describedby="price_per_day-help" v-model="displayData.price_per_day" @blur="setTouched('price_per_day')" :invalid="!validations.priceValid && touched.price_per_day"/>
+              <small v-if="!validations.priceValid && touched.price_per_day" class="p-error">El precio debe ser un número positivo.</small>
             </div>
 
             <div class="flex flex-column gap-2">
-              <label for="resolution_height">Resolution Height</label>
-              <InputText id="resolution_height" aria-describedby="resolution_height-help" />
+              <label for="resolution_height">Resolucion Height</label>
+              <InputText id="resolution_height" aria-describedby="resolution_height-help" v-model="displayData.resolution_height" @blur="setTouched('resolution_height')" :invalid="!validations.resolutionHeightValid && touched.resolution_height" />
+              <small v-if="!validations.resolutionHeightValid && touched.resolution_height" class="p-error">La altura de resolución debe ser un número positivo.</small>
             </div>
 
             <div class="flex flex-column gap-2">
-              <label for="resolution_width">Resolution Width</label>
-              <InputText id="resolution_width" aria-describedby="resolution_width-help" />
+              <label for="resolution_width">Resolucion Width</label>
+              <InputText id="resolution_width" aria-describedby="resolution_width-help" v-model="displayData.resolution_width" @blur="setTouched('resolution_width')" :invalid="!validations.resolutionWidthValid && touched.resolution_width"/>
+              <small v-if="!validations.resolutionWidthValid && touched.resolution_width" class="p-error">El ancho de resolución debe ser un número positivo.</small>
+            </div>
+
+            <div class="flex flex-column gap-2">
+              <label for="type">Outdoor - Indoor</label>
+              <Dropdown v-model="selectedType" :options="typeItem" optionLabel="name" placeholder="Seleccione una opcion" class="w-full" @blur="setTouched('type')"  :invalid="!validations.typeValid && touched.type"  />
+              <small v-if="!validations.typeValid && touched.type" class="p-error">Por favor seleccione un tipo.</small>
             </div>
           </div>
         </div>
@@ -39,13 +51,67 @@
         </template>
         <template #footer>
           <div class="flex gap-3 mt-1">
-              <Button label="Cancel" severity="secondary" outlined class="w-full" />
-              <Button label="Save" class="w-full" />
+            <Button label="Limpiar" @click="resetForm" severity="secondary" outlined class="w-full" />
+            <Button label="Guardar" @click="saveDisplay" class="w-full" :disabled="!isValidForm">
+          
+        </Button>
           </div>
         </template>
     </Card>
 </template>
 
+<script setup lang="ts">
+import { reactive, ref, watch } from 'vue';
+import { useDisplays } from '../composables/useDisplays';
+import { useValidationForm } from '../composables/useValidationForm';
+
+const displayData = reactive({
+    name: '',
+    description: '',
+    price_per_day: null,
+    resolution_height: null,
+    resolution_width: null,
+    type: ''
+});
+
+
+const { validations, isValidForm,touched,setTouched,setClearInput,touchAll } = useValidationForm(displayData);
+const { createDisplay } = useDisplays();
+const selectedType = ref(null);
+
+const typeItem = ref([
+    { name: 'Outdoor', value: 'outdoor' },
+    { name: 'Indoor', value: 'indoor' },
+]);
+
+
+const saveDisplay = async () => {
+    // Agregar validación básica:
+    touchAll()
+    if (!isValidForm.value) return
+    try {
+        await createDisplay(displayData);
+        resetForm(); 
+    } catch (error) {
+        console.error('Error al guardar el display:', error);
+        alert('Error al guardar el display. Por favor, inténtelo de nuevo.');
+    }
+};
+const resetForm = () => {
+    displayData.name = '';
+    displayData.description = '';
+    displayData.price_per_day = null;
+    displayData.resolution_height = null;
+    displayData.resolution_width = null;
+    displayData.type = '';
+    setClearInput()
+};
+watch(selectedType, (newValue) => {
+    if (newValue) {
+        displayData.type = newValue.value; // Asegúrate de asignar el valor de la propiedad 'value' del tipo seleccionado.
+    }
+}, { immediate: true });
+</script>
 
   
 <style scoped>

@@ -30,9 +30,11 @@ const totalItems = ref(0);
 
 
 export const useDisplays = () => {
+    const isLoading = ref(false)
     const productsCount = ref(0);
     const totalCount = ref(0)
-    const { selectedPageSize,selectedOptionType,searchQuery,selectOffset } = useSelectedQuery()
+
+    const { selectedPageSize,selectedOptionType,searchQuery,selectOffset,clearDataSelected } = useSelectedQuery()
     const token = 'OC1iZXJuYXJkb2NrZGV2QGdtYWlsLmNvbQ=='
     const headers = {
         Authorization: `Bearer ${token}`
@@ -40,8 +42,8 @@ export const useDisplays = () => {
 
     const getDisplays = async () => {
 
+        isLoading.value = true    
         try {
-            
             let url = `/display?offset=${selectOffset.value}&pageSize=${selectedPageSize.value}`;
             if (searchQuery.value) url += `&name=${encodeURIComponent(searchQuery.value)}`;
             if (selectedOptionType.value.value!='todos') url += `&type=${encodeURIComponent(selectedOptionType.value.value)}`;
@@ -52,8 +54,11 @@ export const useDisplays = () => {
             // Actualizar los estados reactivos
             products.value = responseData.data;
             totalItems.value = responseData.totalCount;
-    
-        } catch (error) {
+            isLoading.value = false    
+            searchQuery.value=''
+            
+        } 
+        catch (error) {
             console.error('Error fetching displays:', error);
             throw error;
         }
@@ -70,7 +75,18 @@ export const useDisplays = () => {
             console.error('Error fetching display totals:', error);
         }
     };
-    
+    const createDisplay = async (displayData) => {
+        try {
+            const response = await displaysApi.post('/display', displayData,{ headers });
+            clearDataSelected()
+            getDisplays()
+            return response.data; // Maneja la respuesta como necesites
+        } catch (error) {
+            console.error('Error al crear el display:', error);
+            throw error; // Propaga el error para manejarlo en la interfaz de usuario
+        }
+    };
+
     const itemsOutdoor = computed(() => {
             const results = productsCount.value.filter(product => product.type === 'outdoor')
             return results
@@ -86,12 +102,15 @@ export const useDisplays = () => {
     const inDoorPercent = computed(() => {
         return 100 - outDoorPercent.value;
     });
+    
     return{
         products,
         totalItems,
         getDisplays,
         outDoorPercent,
         inDoorPercent,
-        getTotalDisplays
+        getTotalDisplays,
+        createDisplay,
+        isLoading
     }
 }
