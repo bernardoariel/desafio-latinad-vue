@@ -13,7 +13,7 @@
 
         <div class="flex flex-column gap-2 mb-2">
             <label for="description">Descripcion</label>
-            <InputText id="description" aria-describedby="description-help" v-model="itemSelected.description" @blur="setTouched('description')" :invalid="validations.descriptionValid && touched.description"/>
+            <InputText id="description" aria-describedby="description-help" v-model="itemSelected.description" @blur="setTouched('description')" :invalid="!validations.descriptionValid && touched.description"/>
             <small v-if="!validations.descriptionValid && touched.description" class="p-error">La descripción debe tener al menos 3 caracteres.</small>
         </div>
 
