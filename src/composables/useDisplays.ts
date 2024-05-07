@@ -34,7 +34,7 @@ export const useDisplays = () => {
     const productsCount = ref(0);
     const totalCount = ref(0)
 
-    const { selectedPageSize,selectedOptionType,searchQuery,selectOffset,clearDataSelected } = useSelectedQuery()
+    const { selectedPageSize,selectedOptionType,searchQuery,selectOffset,clearDataSelected,setSelectedItem } = useSelectedQuery()
     const token = 'OC1iZXJuYXJkb2NrZGV2QGdtYWlsLmNvbQ=='
     const headers = {
         Authorization: `Bearer ${token}`
@@ -97,7 +97,17 @@ export const useDisplays = () => {
         }
     };
     
-
+    const getDisplayById = async (id: number) => {
+        
+        try {
+            const response = await displaysApi.get(`/display/${id}`, { headers });
+            setSelectedItem(response.data);
+            isLoading.value = false;
+        } catch (error) {
+            console.error('Error fetching display details:', error);
+            isLoading.value = false;
+        }
+    };
     const itemsOutdoor = computed(() => {
             const results = productsCount.value.filter(product => product.type === 'outdoor')
             return results
@@ -108,6 +118,22 @@ export const useDisplays = () => {
     const outDoorPercent = computed(() => {
         return totalCount.value ? Math.round((itemsOutdoor.value.length / totalCount.value) * 100) : 0;
     });
+
+    // En tu archivo useDisplays.js o similar
+
+    const updateDisplay = async (displayData) => {
+        isLoading.value = true;
+        try {
+            const response = await displaysApi.put(`/display/${displayData.id}`, displayData, { headers });
+            getDisplays(); // Actualiza la lista de displays después de la actualización
+            isLoading.value = false;
+            return response.data;
+        } catch (error) {
+            console.error('Error al actualizar el display:', error);
+            isLoading.value = false;
+            throw error; // Propaga el error para manejarlo en la interfaz de usuario
+        }
+    };
 
     
     const inDoorPercent = computed(() => {
@@ -123,6 +149,8 @@ export const useDisplays = () => {
         getTotalDisplays,
         createDisplay,
         isLoading,
-        deleteDisplay
+        deleteDisplay,
+        getDisplayById,
+        updateDisplay
     }
 }

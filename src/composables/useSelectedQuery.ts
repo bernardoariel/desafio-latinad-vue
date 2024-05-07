@@ -5,7 +5,9 @@ const selectedPageSize = ref(5);
 const selectedOptionType = ref({ name: 'Todos', value: 'todos' });
 const searchQuery = ref('');
 const selectOffset = ref(0)
+
 const itemSelected = reactive({
+    id: null,
     name: '',
     description: '',
     price_per_day: null,
@@ -15,17 +17,25 @@ const itemSelected = reactive({
 });
 export const useSelectedQuery = () =>{
 
-    const clearDataSelected = ()=>{
-        selectedPageSize.value = 5
-        selectedOptionType.value = { name: 'Todos', value: 'todos' }
-        searchQuery.value = ''
-        selectOffset.value = 0    
-    }
+    const clearDataSelected = () => {
+        itemSelected.id = null;
+        itemSelected.name = '';
+        itemSelected.description = '';
+        itemSelected.price_per_day = null;
+        itemSelected.resolution_height = null;
+        itemSelected.resolution_width = null;
+        itemSelected.type = '';
+    };
+    const setSelectedItem = (item) => {
+        Object.assign(itemSelected, item);
+    };
     return {
         selectedPageSize,
         selectedOptionType,
         searchQuery,
         selectOffset,
-        clearDataSelected
+        itemSelected,
+        clearDataSelected,
+        setSelectedItem
     }
 }

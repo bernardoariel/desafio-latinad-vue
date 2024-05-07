@@ -18,6 +18,7 @@ import InputText from 'primevue/inputtext';
 import Panel from 'primevue/panel';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+import ConfirmationService from 'primevue/confirmationservice';
 import MeterGroup from 'primevue/metergroup';
 import Toolbar from 'primevue/toolbar';
 import Avatar from 'primevue/avatar';
@@ -25,9 +26,10 @@ import SelectButton from 'primevue/selectbutton';
 import ProgressSpinner from 'primevue/progressspinner';
 import ProgressBar from 'primevue/progressbar';
 import ConfirmPopup from 'primevue/confirmpopup';
-
 const app = createApp(App)
 app.use(PrimeVue);
+app.use(ConfirmationService);
+app.use(ToastService);
 app.use(router)
 
 app.component('Button', Button);
@@ -48,6 +50,4 @@ app.component('ProgressBar', ProgressBar);
 app.component('ConfirmPopup', ConfirmPopup);
 
 
-
-app.use(ToastService);
 app.mount('#app')

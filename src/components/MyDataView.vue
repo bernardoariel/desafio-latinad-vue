@@ -78,8 +78,8 @@
                                 <div class="flex flex-column gap-4 mt-4">
                                     <span class="text-2xl font-semibold text-900">${{ item.price_per_day }}</span>
                                     <div class="flex gap-2">
-                                        <Button icon="pi pi-pencil" label="Editar Item" class="flex-auto white-space-nowrap"></Button>
-                                        <Button icon="pi pi-trash" severity="danger" outlined @click="handleDelete(item.id)"></Button>
+                                        <Button icon="pi pi-pencil" label="Editar Item" class="flex-auto white-space-nowrap" @click="getDisplayById(item.id)"></Button>
+                                        <Button icon="pi pi-trash" severity="danger" outlined @click="confirmDelete($event, item.id)"></Button>
                                        
                                     </div>
                                 </div>
@@ -98,6 +98,8 @@
         :currentPage="currentPage"
         @pageChange="handlePageChange"
     />
+    <Toast />
+    <ConfirmPopup></ConfirmPopup>
 </template>
 
 <script setup lang="ts">
@@ -106,11 +108,42 @@ import { useDisplays, } from "@/composables/useDisplays";
 import { getSeverity } from '../helpers/getSeverity';
 import { useSelectedQuery } from '../composables/useSelectedQuery';
 import PaginationNumber from "./PaginationNumber.vue";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+
+
 
 const { selectedPageSize,selectedOptionType,searchQuery,selectOffset } = useSelectedQuery()
-const { getDisplays, totalItems,products,isLoading,deleteDisplay} = useDisplays();
+const { getDisplays, totalItems,products,isLoading,deleteDisplay,getDisplayById } = useDisplays();
+const confirm = useConfirm();
+const toast = useToast();
 const currentPage = ref(1);
 
+const confirmDelete   = async(event, id) => {
+
+    confirm.require({
+        target: event.currentTarget,
+        message: '¿ Desea eliminar este display ?',
+        acceptLabel: 'Si',
+        rejectLabel: 'No',
+        acceptIcon: 'pi pi-check',
+        rejectIcon: 'pi pi-times',
+        acceptClass: 'p-button-danger',
+        rejectClass: 'p-button-secondary',
+        accept: async () => {
+            try {
+               
+                await deleteDisplay(id);
+                toast.add({ severity: 'success', summary: 'Deleted', detail: 'El Item ha sido eliminado correctamente.' });
+            } catch (error) {
+                toast.add({ severity: 'error', summary: 'Error', detail: 'Fallo la eliminacion del item.' });
+            }
+        },
+        reject: () => {
+            toast.add({ severity: 'info', summary: 'Cancelled', detail: 'Ha sido cancelada la operacion.' });
+        }
+    });
+};
 
 
 const layout = ref('grid');
@@ -130,10 +163,7 @@ const handlePageChange = async (newPage) => {
     selectOffset.value = (newPage - 1) * selectedPageSize.value;
     await getItems();
 };
-const handleDelete = async (id:number)=>{
-    console.log('id::: ', id);
-    deleteDisplay(id)
-}
+
 onMounted(async() => {
     try {
     await getDisplays();
