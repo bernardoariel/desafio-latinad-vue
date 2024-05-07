@@ -108,18 +108,16 @@ export const useDisplays = () => {
             isLoading.value = false;
         }
     };
+
     const itemsOutdoor = computed(() => {
             const results = productsCount.value.filter(product => product.type === 'outdoor')
             return results
         }
     );
     const itemsIndoor = computed(() => productsCount.value.filter(product => product.type === 'indoor'));
-
     const outDoorPercent = computed(() => {
         return totalCount.value ? Math.round((itemsOutdoor.value.length / totalCount.value) * 100) : 0;
     });
-
-    // En tu archivo useDisplays.js o similar
 
     const updateDisplay = async (displayData) => {
         isLoading.value = true;

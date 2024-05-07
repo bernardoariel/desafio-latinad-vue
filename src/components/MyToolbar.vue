@@ -13,15 +13,15 @@
                             fill="var(--surface-card)"
                         />
                     </svg>
-                    <Button label="Escritorio" text plain />
+                    
                     <Button label="Agregar" text plain @click="clearSelectedItem" />
-                    <Button label="View" text plain />
+                 
                 </div>
             </template>
 
             <template #end>
                 <div class="flex align-items-center gap-2">
-                    <Button label="Salir" severity="contrast" size="small" />
+                    <Button label="Salir" severity="contrast" size="small" @click="logout"/>
                     <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" style="width: 32px; height: 32px" />
                 </div>
             </template>
@@ -31,9 +31,13 @@
 
 <script setup lang="ts">
 import { useSelectedQuery } from '../composables/useSelectedQuery';
+import { useAuth } from '../composables/useAuth';
+
+const { logout } = useAuth();
 const {clearDataSelected } = useSelectedQuery()
 
 const clearSelectedItem = () => {
     clearDataSelected();
 }
+
 </script>
