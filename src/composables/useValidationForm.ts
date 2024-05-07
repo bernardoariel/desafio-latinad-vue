@@ -9,11 +9,8 @@ export const useValidationForm = (displayData) => {
         resolution_width: false,
         type: false
     });
-    // Función para verificar si el valor es numérico
     const isNumeric = (value) => !isNaN(parseFloat(value)) && isFinite(value);
-    // Función para verificar si la longitud de un texto es menor a 3 caracteres
     const isShortText = (text) => text.length < 3;
-    // Validaciones computadas
     const validations = computed(() => {
         return {
             nameValid: !touched.name || displayData.name.length >= 3,
@@ -25,7 +22,6 @@ export const useValidationForm = (displayData) => {
         };
     });
 
-    // Función para verificar todas las validaciones
     const isValidForm = computed(() => {
         return Object.values(validations.value).every(Boolean);
     });

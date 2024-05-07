@@ -16,10 +16,11 @@ export const useAuth = ()=>{
                 password
             });
             // Suponiendo que el token se devuelve en la respuesta
-            localStorage.setItem('authToken', response.data.token);
-           
+            const token = response.data.data.token; 
+            localStorage.setItem('authToken', token);
             isLoading.value = false;
-            console.log('auth')
+
+
             return true;
         } catch (error) {
             

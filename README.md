@@ -5,6 +5,11 @@ This template should help get you started developing with Vue 3 in Vite.
 - Configuracion Inicial (PrimeVue - PrimeFlex)
 - Estructura de Carpetas
 - UI Incial
+- Componente de Paginacion
+- modulo de Display
+- Modulo de Agregado y Edicion
+- Modulo de Login - Guards
+- Unit Test
 
 
 ## Customize configuration

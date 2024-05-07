@@ -56,7 +56,7 @@
         <template #footer>
           <div class="flex gap-3 mt-1">
             <Button :label="itemSelected.id ? 'Cancelar' : 'Limpiar'" @click="resetForm" severity="secondary" outlined class="w-full"/>
-            <Button label="Guardar" @click="saveDisplay" class="w-full" :disabled="!isValidForm">
+            <Button label="Guardar" data-testid="save-button" @click="saveDisplay" class="w-full" :disabled="!isValidForm">
           
         </Button>
           </div>
@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useDisplays } from '../composables/useDisplays';
 import { useValidationForm } from '../composables/useValidationForm';
 import { useSelectedQuery } from '../composables/useSelectedQuery';
