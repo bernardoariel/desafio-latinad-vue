@@ -7,6 +7,7 @@ export const useAuth = ()=>{
     const errorMessage = ref('');
     const router = useRouter();
     const login = async (email, password) => {
+    
         isLoading.value = true;
         errorMessage.value = '';
 
@@ -15,8 +16,9 @@ export const useAuth = ()=>{
                 email,
                 password
             });
-            // Suponiendo que el token se devuelve en la respuesta
-            const token = response.data.data.token; 
+
+            const token = response.data.token; 
+
             localStorage.setItem('authToken', token);
             isLoading.value = false;
 

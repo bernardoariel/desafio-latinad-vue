@@ -2,6 +2,7 @@
 import { ref, watch, computed } from 'vue';
 import { displaysApi } from '../api/displaysApi';
 import { useSelectedQuery } from './useSelectedQuery';
+import { useRouter } from 'vue-router';
 
 interface DisplayResponse {
     totalCount: number;
@@ -30,16 +31,26 @@ const totalItems = ref(0);
 
 
 export const useDisplays = () => {
+
     const isLoading = ref(false)
     const productsCount = ref(0);
     const totalCount = ref(0)
+    const router = useRouter();
 
     const { selectedPageSize,selectedOptionType,searchQuery,selectOffset,clearDataSelected,setSelectedItem } = useSelectedQuery()
-    const token = 'OC1iZXJuYXJkb2NrZGV2QGdtYWlsLmNvbQ=='
-    const headers = {
-        Authorization: `Bearer ${token}`
+    const getToken = () => {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            router.push({ name: 'Login' });
+            return null;
+        }
+        return token;
     };
+    const token = getToken();
 
+    const getHeaders = () => {
+        return { Authorization: `Bearer ${getToken()}` };
+    };
     const getDisplays = async () => {
 
         isLoading.value = true    
@@ -48,7 +59,8 @@ export const useDisplays = () => {
             if (searchQuery.value) url += `&name=${encodeURIComponent(searchQuery.value)}`;
             if (selectedOptionType.value.value!='todos') url += `&type=${encodeURIComponent(selectedOptionType.value.value)}`;
             
-            const response = await displaysApi.get<DisplayResponse>(url, { headers });
+            const response = await displaysApi.get<DisplayResponse>(url, { headers: getHeaders() });
+            products.value = response.data.data;
             const { data: responseData } = response; 
     
             // Actualizar los estados reactivos
@@ -67,7 +79,7 @@ export const useDisplays = () => {
         try {
             let url = `/display?offset=0&pageSize=1000`; // pageSize=0 podría indicar que solo queremos metadatos
                        
-            const response = await displaysApi.get<DisplayResponse>(url, { headers });
+            const response = await displaysApi.get<DisplayResponse>(url, { headers: getHeaders() });
             productsCount.value = response.data.data;
             totalCount.value = response.data.totalCount; 
 
@@ -77,7 +89,7 @@ export const useDisplays = () => {
     };
     const createDisplay = async (displayData) => {
         try {
-            const response = await displaysApi.post('/display', displayData,{ headers });
+            const response = await displaysApi.post('/display', displayData,{ headers: getHeaders() });
             clearDataSelected()
             getDisplays()
             return response.data; // Maneja la respuesta como necesites
@@ -88,7 +100,7 @@ export const useDisplays = () => {
     };
     const deleteDisplay = async (id) => {
         try {
-            const response = await displaysApi.delete(`/display/${id}`, { headers });
+            const response = await displaysApi.delete(`/display/${id}`, { headers: getHeaders() });
             getDisplays()
             return response.data;
         } catch (error) {
@@ -100,7 +112,7 @@ export const useDisplays = () => {
     const getDisplayById = async (id: number) => {
         
         try {
-            const response = await displaysApi.get(`/display/${id}`, { headers });
+            const response = await displaysApi.get(`/display/${id}`, { headers: getHeaders() });
             setSelectedItem(response.data);
             isLoading.value = false;
         } catch (error) {
@@ -122,7 +134,7 @@ export const useDisplays = () => {
     const updateDisplay = async (displayData) => {
         isLoading.value = true;
         try {
-            const response = await displaysApi.put(`/display/${displayData.id}`, displayData, { headers });
+            const response = await displaysApi.put(`/display/${displayData.id}`, displayData, { headers: getHeaders() });
             getDisplays(); // Actualiza la lista de displays después de la actualización
             isLoading.value = false;
             return response.data;

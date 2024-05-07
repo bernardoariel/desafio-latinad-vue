@@ -45,21 +45,17 @@ vi.mock('vue-router', () => ({
   
     it('debería iniciar sesión correctamente y almacenar el token', async () => {
       mock.onPost('/login').reply(200, {
-        data: {
           token: "1121121etwelkgf!sdljgoerw=="
-        }
       });
-    
+  
       const { login, isLoading, errorMessage } = useAuth();
-    
+  
       const result = await login('email@gemail.com', 'password');
-    
-      console.log("Token received in test:", localStorage.setItem.mock.calls[0][1]);
-    
+  
       expect(result).toBe(true);
       expect(localStorage.setItem).toHaveBeenCalledWith('authToken', "1121121etwelkgf!sdljgoerw==");
       expect(isLoading.value).toBe(false);
       expect(errorMessage.value).toBe('');
-    });
+  });
 
   })
